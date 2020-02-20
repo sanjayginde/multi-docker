@@ -1,0 +1,36 @@
+language: generic
+
+sudo: required # Need super user to run docker
+services:
+  - docker
+
+before_install:
+  - docker build -t sanjayginde/react-client-test -f ./client/Dockerfile.dev ./client
+
+script:
+  - docker run -e CI=true sanjayginde/react-client-test npm test -- --coverage
+
+after_success:
+  - docker build -t sanjayginde/multi-docker-client ./client
+  - docker build -t sanjayginde/multi-docker-proxy ./proxy
+  - docker build -t sanjayginde/multi-docker-server ./server
+  - docker build -t sanjayginde/multi-docker-worker ./worker
+  - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
+  - docker push sanjayginde/multi-docker-client
+  - docker push sanjayginde/multi-docker-proxy
+  - docker push sanjayginde/multi-docker-server
+  - docker push sanjayginde/multi-docker-worker
+
+# Deploy code to AWS
+# deploy:
+#   # edge: true
+#   provider: elasticbeanstalk
+#   region: "us-east-1"
+#   app: "docker-react-application"
+#   env: "docker-react-application-production"
+#   bucket_name: "elasticbeanstalk-us-east-1-541326117573"
+#   bucket_path: "docker-react-application"
+#   on:
+#     branch: master
+#   access_key_id: $AWS_ACCESS_KEY
+#   secret_access_key: $AWS_SECRET_KEY
