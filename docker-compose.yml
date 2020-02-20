@@ -1,0 +1,58 @@
+version: '3'
+
+services:
+  postgres:
+    image: 'postgres:latest'
+    environment:
+      - POSTGRES_PASSWORD=postgres_password
+  redis:
+    image: 'redis:latest'
+  proxy:
+    restart: always
+    build:
+      context: ./proxy
+      dockerfile: Dockerfile.dev
+    ports:
+      - '8080:80'
+    depends_on:
+      - api
+      - client
+  api:
+    build:
+      context: ./server
+      dockerfile: Dockerfile.dev
+    volumes:
+      - /app/node_modules
+      - ./server:/app
+    environment:
+      - PGHOST=postgres
+      - PGPORT=5432
+      - PGDATABASE=postgres
+      - PGUSER=postgres
+      - PGPASSWORD=postgres_password
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+    depends_on:
+      - redis
+      - postgres
+  client:
+    build:
+      context: ./client
+      dockerfile: Dockerfile.dev
+    volumes:
+      - /app/node_modules # Don't map over this in the container
+      - ./client:/app
+    depends_on:
+      - api
+  worker:
+    build:
+      context: ./worker
+      dockerfile: Dockerfile.dev
+    volumes:
+      - /app/node_modules
+      - ./worker:/app
+    environment:
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+    depends_on:
+      - redis
