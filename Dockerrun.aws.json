@@ -1,0 +1,40 @@
+{
+  "AWSEBDockerrunVersion": 2,
+  "containerDefinitions": [
+    {
+      "name": "client",
+      "image": "sanjayginde/multi-docker-client",
+      "hostname": "client",
+      "essential": false,
+      "memory": 512
+    },
+    {
+      "name": "server",
+      "image": "sanjayginde/multi-docker-server",
+      "hostname": "api",
+      "essential": false,
+      "memory": 512
+    },
+    {
+      "name": "worker",
+      "image": "sanjayginde/multi-docker-worker",
+      "hostname": "worker",
+      "essential": false,
+      "memory": 512
+    },
+    {
+      "name": "proxy",
+      "image": "sanjayginde/multi-docker-proxy",
+      "hostname": "proxy",
+      "essential": true,
+      "portMappings": [
+        {
+          "hostPort": 80,
+          "containerPort": 80
+        }
+      ],
+      "links": ["client", "server"],
+      "memory": 512
+    }
+  ]
+}
