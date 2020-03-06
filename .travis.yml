@@ -21,15 +21,15 @@ after_success:
   - docker push sanjayginde/multi-docker-server
   - docker push sanjayginde/multi-docker-worker
 
-deploy:
-  edge: true
-  provider: elasticbeanstalk
-  region: "us-east-1"
-  app: "multi-docker"
-  env: "MultiDocker-production"
-  bucket_name: "elasticbeanstalk-us-east-1-541326117573"
-  bucket_path: "multi-docker"
-  on:
-    branch: master
-  access_key_id: $AWS_ACCESS_KEY
-  secret_access_key: $AWS_SECRET_KEY
+# deploy:
+#   edge: true
+#   provider: elasticbeanstalk
+#   region: "us-east-1"
+#   app: "multi-docker"
+#   env: "MultiDocker-production"
+#   bucket_name: "elasticbeanstalk-us-east-1-541326117573"
+#   bucket_path: "multi-docker"
+#   on:
+#     branch: master
+#   access_key_id: $AWS_ACCESS_KEY
+#   secret_access_key: $AWS_SECRET_KEY
